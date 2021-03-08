@@ -1,0 +1,54 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+data_train = np.genfromtxt("C:/Users/komsv/Downloads/lab_1_train.csv", delimiter=",", names=["a", "x","y"])
+data_test = np.genfromtxt("C:/Users/komsv/Downloads/lab_1_test.csv", delimiter=",", names=["a", "x","y"])
+
+def predict(x):
+    return teta[0][0] + teta[1][0]*x
+
+def  cost_func(teta, x, y):
+    m = len(y)
+    predicted = x.dot(teta)
+    return (1/2*m) * np.sum(np.square(predicted-y))
+
+def gradient_descent(x, y, teta, learning_rate, iterations, precision):
+
+    m = len(y)
+    teta1 = teta
+    for it in range(iterations):
+        predicted = x.dot(teta)
+        
+        teta = teta -(1/m)*learning_rate*( x.T.dot((predicted - y)))
+        cost = cost_func(teta,x,y)
+        #print(f"iteration: {it}, cost: {cost_func}, teta: {teta}")
+        if np.abs(teta-teta1).all() < precision:
+           break;
+        teta1 = teta
+    return teta
+
+
+plt.xlabel("x")
+plt.ylabel("y")
+plt.scatter(data_train["x"],data_train["y"], color ="deeppink")
+
+plt.show()
+
+x = np.array([data_train["x"][1:]]).transpose()
+y = np.array([data_train["y"][1:]]).transpose()
+
+teta = np.random.randn(2,1)
+x_ = np.c_[np.ones((len(x),1)),x]
+teta = gradient_descent(x_, y, teta, learning_rate = 0.1, iterations = 1000, precision = 0.1)
+print("teta: ",teta)
+x_testmax = np.max(np.array(data_test["x"][1:]))
+plt.scatter(data_train["x"],data_train["y"], color ="deeppink")
+
+plt.scatter(data_test["x"],data_test["y"], color ="green")
+
+point1 = [0, predict(0)]
+point2 = [x_testmax, predict(x_testmax)]
+
+plt.xlabel("x")
+plt.ylabel("y")
+plt.plot([point1[0], point2[0]], [point1[1], point2[1]])
